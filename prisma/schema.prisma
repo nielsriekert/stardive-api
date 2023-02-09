@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  createdAt      DateTime  @default(now())
+  email          String    @unique
+  password       String?
+  name           String?
+  lastActivityAt DateTime  @default(now())
+  emailVerified  DateTime?
+}
+
+model AstronomicalObject {
+  id                Int                           @id @default(autoincrement())
+  createdAt         DateTime                      @default(now())
+  name              String?
+  // Distance measured in lightyears
+  distance          BigInt?
+  apparentMagnitude Float?
+  constellation     Constellation                 @relation(fields: [constellationId], references: [id])
+  constellationId   Int
+  catalogueObject   AstronomicalCatalogueObject[]
+}
+
+model AstronomicalCatalogue {
+  id      Int                           @id @default(autoincrement())
+  name    String                        @unique
+  objects AstronomicalCatalogueObject[]
+}
+
+model AstronomicalCatalogueObject {
+  id                      Int                   @id @default(autoincrement())
+  catalogueNumber         Int
+  catalog                 AstronomicalCatalogue @relation(fields: [astronomicalCatalogueId], references: [id])
+  object                  AstronomicalObject    @relation(fields: [astronomicalObjectId], references: [id])
+  astronomicalCatalogueId Int
+  astronomicalObjectId    Int
+
+  @@unique([catalogueNumber, astronomicalCatalogueId])
+}
+
+model Constellation {
+  id                  Int                  @id @default(autoincrement())
+  createdAt           DateTime             @default(now())
+  name                String               @unique
+  astronomicalObjects AstronomicalObject[]
+}

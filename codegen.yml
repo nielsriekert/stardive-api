@@ -1,0 +1,17 @@
+schema:
+  - './src/**/typeDef.ts'
+  - scalar BigInt
+emitLegacyCommonJSImports: false
+generates:
+ ./src/types/resolvers-types.ts:
+  config:
+    mappers:
+      Constellation: '@prisma/client#Constellation as ConstellationPrisma'
+      AstronomicalObject: '@prisma/client#AstronomicalObject as AstronomicalObjectPrisma'
+    useIndexSignature: true
+    contextType: ../context.js#Context
+    scalars:
+      BigInt: BigInt
+  plugins:
+    - typescript
+    - typescript-resolvers
